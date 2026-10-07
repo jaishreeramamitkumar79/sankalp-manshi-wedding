@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wedding Invitation | Sankalp & Manshi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Great Vibes (Calligraphy) & Cinzel (Royal Serif) & Cormorant Garamond -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        burgundy: {
+                            800: '#5A0E18',
+                            900: '#3D0710',
+                            950: '#230207',
+                        },
+                        cream: {
+                            50: '#FFFDF9',
+                            100: '#FAF5ED',
+                            200: '#F3E8D7',
+                        },
+                        gold: {
+                            300: '#F2D685',
+                            400: '#E5C158',
+                            500: '#D4AF37',
+                            600: '#AA820A',
+                            700: '#806000',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        body: ['Cormorant Garamond', 'serif'],
+                        script: ['Great Vibes', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Gold Metallic Gradients */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+        }
+
+        .gold-gradient-border {
+            border-image: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #AA771C 100%) 1;
+        }
+
+        .gold-box-shadow {
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Envelope CSS Animations */
+        #envelope-wrapper {
+            perspective: 1200px;
+        }
+
+        .flap {
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s ease;
+        }
+
+        .envelope-open .flap {
+            transform: rotateX(180deg);
+            z-index: 10;
+        }
+
+        .letter {
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s, opacity 0.8s ease 0.5s;
+        }
+
+        .envelope-open .letter {
+            transform: translateY(-100px);
+            opacity: 1;
+        }
+
+        /* Pulsing Wax Seal */
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+            50% { transform: scale(1.06); box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+        }
+
+        .wax-seal-pulse {
+            animation: pulse-gold 2.5s infinite ease-in-out;
+        }
+
+        /* Subtle Petal Canvas Styling */
+        #petal-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #3D0710;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-burgundy-950 text-cream-100 font-body antialiased selection:bg-gold-500 selection:text-burgundy-950 overflow-x-hidden">
+
+    <canvas id="petal-canvas"></canvas>
+
+    <div id="audio-control" class="fixed bottom-6 right-6 z-50 transition-all duration-300 opacity-0 transform translate-y-10">
+        <button id="music-toggle-btn" onclick="toggleAudio()" class="flex items-center space-x-2 bg-burgundy-900/90 border border-gold-500/50 text-gold-400 p-3 px-4 rounded-full shadow-2xl backdrop-blur-md hover:scale-105 transition-all duration-300">
+            <i id="music-icon" class="fas me-1 fa-music animate-spin-slow"></i>
+            <span id="music-text" class="text-xs font-serif tracking-widest uppercase font-semibold">Play Music</span>
+        </button>
+    </div>
+    
+    <!-- Hidden Royalty Free Indian Flute Audio Stream -->
+    <audio id="wedding-audio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=indian-flute-meditation-113883.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="envelope-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-burgundy-950/95 p-4 transition-opacity duration-1000">
+        <div id="envelope-wrapper" class="relative w-full max-w-md h-[480px] flex items-center justify-center">
+            
+            <!-- Envelope Body -->
+            <div id="envelope" class="relative w-full h-[320px] bg-burgundy-900 rounded-xl shadow-2xl border-2 border-gold-500/40 flex flex-col items-center justify-center p-6 text-center cursor-pointer overflow-hidden transition-all duration-700 hover:border-gold-400">
+                
+                <!-- Background Mandala Pattern overlay -->
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+                <!-- Top Opening Flap -->
+                <div class="flap absolute top-0 left-0 right-0 h-1/2 bg-burgundy-800 border-b-2 border-gold-500/30 rounded-t-xl z-20 flex items-end justify-center pb-2">
+                    <div class="w-full h-full bg-gradient-to-b from-burgundy-950/40 to-transparent"></div>
+                </div>
+
+                <!-- Inner Card Preview revealed on tap -->
+                <div class="letter absolute inset-4 bg-cream-50 text-burgundy-900 rounded-lg p-6 shadow-inner z-10 opacity-80 flex flex-col items-center justify-center border border-gold-500/30">
+                    <p class="font-serif text-xs uppercase tracking-widest text-gold-700">Royal Invitation</p>
+                    <h2 class="font-script text-4xl text-burgundy-900 my-2">Sankalp & Manshi</h2>
+                    <p class="font-serif text-xs tracking-wider text-burgundy-800">25 November 2026</p>
+                </div>
+
+                <!-- Envelope Front Seals & Text -->
+                <div id="seal-container" class="relative z-30 flex flex-col items-center mt-12 transition-all duration-500">
+                    <!-- Wax Seal -->
+                    <div onclick="openInvitation()" class="wax-seal-pulse w-20 h-20 bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 rounded-full flex items-center justify-center border-2 border-amber-200 cursor-pointer shadow-2xl transform hover:scale-110 transition-transform">
+                        <span class="font-serif text-burgundy-950 font-bold text-xl tracking-tighter">S&M</span>
+                    </div>
+
+                    <p class="font-serif text-xs text-gold-300 tracking-widest uppercase mt-6 animate-pulse">Tap Wax Seal To Open</p>
+                    <p class="font-script text-2xl text-cream-100 mt-1">Sankalp & Manshi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content" class="min-h-screen hidden transition-opacity duration-1000 opacity-0 pb-16">
+
+        <section class="relative min-h-screen flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-burgundy-900 via-burgundy-950 to-burgundy-950">
+            
+            <!-- Royal Border Wrapper -->
+            <div class="relative w-full max-w-3xl mx-auto border-2 border-gold-500/40 rounded-3xl p-6 md:p-12 text-center bg-burgundy-900/40 backdrop-blur-sm shadow-2xl my-8">
+                
+                <!-- Corner Royal SVG Mandalas -->
+                <div class="absolute top-3 left-3 w-12 h-12 border-t-2 border-l-2 border-gold-400 rounded-tl-xl"></div>
+                <div class="absolute top-3 right-3 w-12 h-12 border-t-2 border-r-2 border-gold-400 rounded-tr-xl"></div>
+                <div class="absolute bottom-3 left-3 w-12 h-12 border-b-2 border-l-2 border-gold-400 rounded-bl-xl"></div>
+                <div class="absolute bottom-3 right-3 w-12 h-12 border-b-2 border-r-2 border-gold-400 rounded-br-xl"></div>
+
+                <!-- Ganesh Icon / Motif -->
+                <div class="text-gold-400 text-3xl md:text-4xl mb-4">
+                    <i class="fas fa-om"></i>
+                </div>
+
+                <p class="font-serif text-sm md:text-base tracking-widest text-gold-300 uppercase mb-3">|| Shree Ganeshay Namah ||</p>
+                <p class="font-serif text-xs md:text-sm tracking-widest text-cream-200 uppercase mb-6">Together With Their Families</p>
+
+                <!-- Couple Names -->
+                <h1 class="font-script text-5xl md:text-7xl gold-gradient-text my-4 leading-tight">
+                    Sankalp <span class="text-3xl md:text-5xl text-gold-300 font-serif">&</span> Manshi
+                </h1>
+
+                <p class="font-serif italic text-lg md:text-xl text-cream-200 my-4">“We’re Saying ‘I Do’”</p>
+
+                <div class="w-32 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent mx-auto my-6"></div>
+
+                <!-- Main Date & Time -->
+                <div class="space-y-2 text-gold-300 font-serif">
+                    <p class="text-2xl md:text-3xl font-semibold tracking-wide">Wednesday, 25 November 2026</p>
+                    <p class="text-base md:text-lg tracking-widest text-cream-200">Main Ceremony: 8:00 PM IST Onwards</p>
+                    <p class="text-sm md:text-base text-gold-400 font-semibold mt-2">
+                        <i class="fas fa-map-marker-alt me-2 text-gold-400"></i>The Krishna Palace, Farrukhabad, U.P.
+                    </p>
+                </div>
+
+                <div class="mt-8">
+                    <span class="inline-block bg-burgundy-950/80 border border-gold-500/40 text-gold-300 text-xs uppercase font-serif tracking-widest px-4 py-2 rounded-full">
+                        Dress Code: Indian Traditional Attire
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-burgundy-900/60 border-y border-gold-500/20">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <h3 class="font-serif text-xs uppercase tracking-widest text-gold-400 mb-6">Counting Down To The Sacred Moment</h3>
+                
+                <div class="grid grid-cols-4 gap-3 md:gap-6 max-w-xl mx-auto">
+                    <div class="bg-burgundy-950/80 border border-gold-500/40 p-3 md:p-4 rounded-xl shadow-lg">
+                        <span id="days" class="font-serif text-2xl md:text-4xl font-bold text-gold-400 block">00</span>
+                        <span class="text-[10px] md:text-xs uppercase font-serif text-cream-200 tracking-wider">Days</span>
+                    </div>
+                    <div class="bg-burgundy-950/80 border border-gold-500/40 p-3 md:p-4 rounded-xl shadow-lg">
+                        <span id="hours" class="font-serif text-2xl md:text-4xl font-bold text-gold-400 block">00</span>
+                        <span class="text-[10px] md:text-xs uppercase font-serif text-cream-200 tracking-wider">Hours</span>
+                    </div>
+                    <div class="bg-burgundy-950/80 border border-gold-500/40 p-3 md:p-4 rounded-xl shadow-lg">
+                        <span id="minutes" class="font-serif text-2xl md:text-4xl font-bold text-gold-400 block">00</span>
+                        <span class="text-[10px] md:text-xs uppercase font-serif text-cream-200 tracking-wider">Mins</span>
+                    </div>
+                    <div class="bg-burgundy-950/80 border border-gold-500/40 p-3 md:p-4 rounded-xl shadow-lg">
+                        <span id="seconds" class="font-serif text-2xl md:text-4xl font-bold text-gold-400 block">00</span>
+                        <span class="text-[10px] md:text-xs uppercase font-serif text-cream-200 tracking-wider">Secs</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 px-4 max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="font-serif text-xs uppercase tracking-widest text-gold-400">Celebration Itinerary</p>
+                <h2 class="font-script text-5xl md:text-6xl text-cream-50 mt-2">Wedding Events</h2>
+                <div class="w-24 h-0.5 bg-gold-500 mx-auto mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Event 1: Baraat Departure -->
+                <div class="bg-burgundy-900/50 border border-gold-500/30 rounded-2xl p-6 text-center hover:border-gold-400 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                    <div>
+                        <div class="w-14 h-14 bg-gold-500/10 border border-gold-500/40 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-400 text-2xl">
+                            <i class="fas fa-drum"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-gold-300 font-semibold mb-1">Baraat Departure</h3>
+                        <p class="font-serif text-xs text-cream-200 tracking-wider mb-4">25 NOVEMBER 2026 • 6:30 PM</p>
+                        <p class="text-sm text-cream-100 font-body mb-4 leading-relaxed">
+                            “The Baraat will depart from the groom’s residence. Join us as we begin the celebrations with music, joy and blessings.”
+                        </p>
+                        <p class="text-xs text-gold-400 font-serif font-semibold mb-6">
+                            <i class="fas fa-home me-1"></i> Groom's Residence<br>
+                            <span class="text-cream-200 font-normal">5/35 Bagh Kuncha, Farrukhabad</span>
+                        </p>
+                    </div>
+                    <a href="https://maps.google.com/?q=5/35+Bagh+Kuncha+Farrukhabad" target="_blank" rel="noopener noreferrer" class="inline-block bg-gold-500/20 border border-gold-500/50 hover:bg-gold-500 text-gold-300 hover:text-burgundy-950 font-serif text-xs uppercase tracking-widest py-3 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-directions me-2"></i> Get Directions
+                    </a>
+                </div>
+
+                <!-- Event 2: Wedding Ceremony -->
+                <div class="bg-burgundy-900/80 border-2 border-gold-500 rounded-2xl p-6 text-center transform md:-translate-y-2 transition-all duration-300 flex flex-col justify-between shadow-2xl relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-500 text-burgundy-950 font-serif text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full">
+                        Main Event
+                    </div>
+                    <div>
+                        <div class="w-14 h-14 bg-gold-500/20 border border-gold-500 rounded-full flex items-center justify-center mx-auto my-4 text-gold-400 text-2xl">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl text-gold-300 font-bold mb-1">Wedding Ceremony</h3>
+                        <p class="font-serif text-xs text-cream-200 tracking-wider mb-4">25 NOVEMBER 2026 • 8:00 PM</p>
+                        <p class="text-sm text-cream-100 font-body mb-4 leading-relaxed">
+                            “Join us as we begin our beautiful journey together with the sacred wedding ceremony and phere.”
+                        </p>
+                        <p class="text-xs text-gold-400 font-serif font-semibold mb-6">
+                            <i class="fas fa-building me-1"></i> The Krishna Palace<br>
+                            <span class="text-cream-200 font-normal">Farrukhabad, Uttar Pradesh</span>
+                        </p>
+                    </div>
+                    <a href="https://maps.google.com/?q=The+Krishna+Palace+Farrukhabad" target="_blank" rel="noopener noreferrer" class="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-burgundy-950 font-serif font-bold text-xs uppercase tracking-widest py-3 px-4 rounded-lg shadow-lg hover:brightness-110 transition-all">
+                        <i class="fas fa-directions me-2"></i> Get Directions
+                    </a>
+                </div>
+
+                <!-- Event 3: Reception & Dinner -->
+                <div class="bg-burgundy-900/50 border border-gold-500/30 rounded-2xl p-6 text-center hover:border-gold-400 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                    <div>
+                        <div class="w-14 h-14 bg-gold-500/10 border border-gold-500/40 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-400 text-2xl">
+                            <i class="fas fa-glass-cheers"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-gold-300 font-semibold mb-1">Reception & Dinner</h3>
+                        <p class="font-serif text-xs text-cream-200 tracking-wider mb-4">25 NOVEMBER 2026 • 9:30 PM ONWARDS</p>
+                        <p class="text-sm text-cream-100 font-body mb-4 leading-relaxed">
+                            “Celebrate our union with a royal feast and an unforgettable evening of joy, love, and festivities.”
+                        </p>
+                        <p class="text-xs text-gold-400 font-serif font-semibold mb-6">
+                            <i class="fas fa-building me-1"></i> The Krishna Palace<br>
+                            <span class="text-cream-200 font-normal">Farrukhabad, Uttar Pradesh</span>
+                        </p>
+                    </div>
+                    <a href="https://maps.google.com/?q=The+Krishna+Palace+Farrukhabad" target="_blank" rel="noopener noreferrer" class="inline-block bg-gold-500/20 border border-gold-500/50 hover:bg-gold-500 text-gold-300 hover:text-burgundy-950 font-serif text-xs uppercase tracking-widest py-3 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-directions me-2"></i> Get Directions
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="py-16 bg-burgundy-900/40 border-y border-gold-500/20">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <p class="font-serif text-xs uppercase tracking-widest text-gold-400">With Warmest Compliments</p>
+                <h2 class="font-script text-5xl text-cream-50 mt-1 mb-12">Family & Blessings</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <!-- Groom's Parents -->
+                    <div class="bg-burgundy-950/80 border border-gold-500/30 p-6 rounded-2xl">
+                        <p class="font-serif text-xs text-gold-400 uppercase tracking-widest mb-2">Groom's Parents</p>
+                        <h4 class="font-serif text-lg text-cream-100 font-semibold">Shri Virendra Kumar Pandey</h4>
+                        <p class="text-gold-300 font-script text-xl my-1">&</p>
+                        <h4 class="font-serif text-lg text-cream-100 font-semibold">Smt. Mradula Pandey</h4>
+                    </div>
+
+                    <!-- Bride's Parents -->
+                    <div class="bg-burgundy-950/80 border border-gold-500/30 p-6 rounded-2xl">
+                        <p class="font-serif text-xs text-gold-400 uppercase tracking-widest mb-2">Bride's Parents</p>
+                        <h4 class="font-serif text-lg text-cream-100 font-semibold">Shri Ramji Pandey</h4>
+                        <p class="text-gold-300 font-script text-xl my-1">&</p>
+                        <h4 class="font-serif text-lg text-cream-100 font-semibold">Smt. Pushpa Pandey</h4>
+                    </div>
+                </div>
+
+                <div class="bg-burgundy-900/30 border border-gold-500/20 p-6 rounded-xl max-w-2xl mx-auto">
+                    <p class="font-serif text-xs uppercase tracking-widest text-gold-400 mb-2">Extended Family & Relatives</p>
+                    <p class="text-sm text-cream-200 italic font-body">
+                        “Seeking blessings from all grandparents, uncles, aunts, elders, and loved ones of the Pandey family.”
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 px-4 max-w-5xl mx-auto">
+            <div class="text-center mb-12">
+                <p class="font-serif text-xs uppercase tracking-widest text-gold-400">Captured Moments</p>
+                <h2 class="font-script text-5xl text-cream-50 mt-1">Photo Gallery</h2>
+                <div class="w-20 h-0.5 bg-gold-500 mx-auto mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div onclick="openLightbox('https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80')" class="overflow-hidden rounded-xl border border-gold-500/30 cursor-pointer group h-64 bg-burgundy-900">
+                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80" alt="Couple Portrait" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div onclick="openLightbox('https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80')" class="overflow-hidden rounded-xl border border-gold-500/30 cursor-pointer group h-64 bg-burgundy-900">
+                    <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" alt="Wedding Rituals" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div onclick="openLightbox('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80')" class="overflow-hidden rounded-xl border border-gold-500/30 cursor-pointer group h-64 bg-burgundy-900">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" alt="Decorations" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+        </section>
+
+        <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4" onclick="closeLightbox()">
+            <span class="absolute top-6 right-6 text-cream-100 text-3xl cursor-pointer"><i class="fas fa-times"></i></span>
+            <img id="lightbox-img" src="" alt="Full View" class="max-w-full max-h-[90vh] rounded-lg border-2 border-gold-500">
+        </div>
+
+        <section class="py-16 px-4 max-w-3xl mx-auto">
+            <div class="bg-burgundy-900/60 border-2 border-gold-500/40 rounded-3xl p-6 md:p-10 shadow-2xl">
+                <div class="text-center mb-8">
+                    <p class="font-serif text-xs uppercase tracking-widest text-gold-400">Kindly Respond</p>
+                    <h2 class="font-script text-5xl text-cream-50 mt-1">RSVP</h2>
+                    <p class="text-xs text-cream-200 font-serif mt-2">Please confirm your presence by 15 November 2026</p>
+                </div>
+
+                <form id="rsvp-form" onsubmit="handleRSVP(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-xs uppercase font-serif text-gold-300 mb-2">Your Full Name</label>
+                        <input type="text" required placeholder="e.g. Rajesh Sharma" class="w-full bg-burgundy-950/80 border border-gold-500/40 rounded-xl p-3 text-cream-100 placeholder-burgundy-800 focus:outline-none focus:border-gold-400">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase font-serif text-gold-300 mb-2">Will You Attend?</label>
+                            <select required class="w-full bg-burgundy-950/80 border border-gold-500/40 rounded-xl p-3 text-cream-100 focus:outline-none focus:border-gold-400">
+                                <option value="Yes">Joyfully Accepts</option>
+                                <option value="No">Regretfully Declines</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-serif text-gold-300 mb-2">Number of Guests</label>
+                            <input type="number" min="1" max="10" value="1" required class="w-full bg-burgundy-950/80 border border-gold-500/40 rounded-xl p-3 text-cream-100 focus:outline-none focus:border-gold-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase font-serif text-gold-300 mb-2">Warm Wishes / Message for Couple</label>
+                        <textarea rows="3" placeholder="Write your blessings..." class="w-full bg-burgundy-950/80 border border-gold-500/40 rounded-xl p-3 text-cream-100 placeholder-burgundy-800 focus:outline-none focus:border-gold-400"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 text-burgundy-950 font-serif font-bold text-sm uppercase tracking-widest py-4 rounded-xl shadow-xl hover:brightness-110 transition-all">
+                        Send Response
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="py-8 px-4 text-center space-y-4">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="shareWhatsApp()" class="bg-green-700 hover:bg-green-600 text-white font-serif text-xs uppercase tracking-widest px-6 py-3 rounded-full flex items-center space-x-2 shadow-lg transition-all">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                    <span>Share on WhatsApp</span>
+                </button>
+
+                <button onclick="addToCalendar()" class="bg-burgundy-900 border border-gold-500/50 hover:bg-burgundy-800 text-gold-300 font-serif text-xs uppercase tracking-widest px-6 py-3 rounded-full flex items-center space-x-2 shadow-lg transition-all">
+                    <i class="far fa-calendar-alt text-lg"></i>
+                    <span>Add to Calendar</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center py-8 text-xs text-gold-400/60 font-serif border-t border-gold-500/10">
+            <p>Sankalp & Manshi Wedding • 25.11.2026</p>
+            <p class="mt-1 text-[10px]">Farrukhabad, Uttar Pradesh</p>
+        </footer>
+    </div>
+
+    <script>
+        /* Open Invitation Animation and Sound Start */
+        function openInvitation() {
+            const envelope = document.getElementById('envelope');
+            const overlay = document.getElementById('envelope-overlay');
+            const mainContent = document.getElementById('main-content');
+            const audioControl = document.getElementById('audio-control');
+
+            envelope.classList.add('envelope-open');
+
+            // Try autoplaying background music
+            const audio = document.getElementById('wedding-audio');
+            audio.play().then(() => {
+                updateMusicUI(true);
+            }).catch(() => {
+                updateMusicUI(false);
+            });
+
+            setTimeout(() => {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                    setTimeout(() => {
+                        mainContent.classList.remove('opacity-0');
+                        audioControl.classList.remove('opacity-0', 'translate-y-10');
+                    }, 50);
+                }, 1000);
+            }, 1200);
+        }
+
+        /* Audio Control Toggle */
+        let isPlaying = false;
+        function toggleAudio() {
+            const audio = document.getElementById('wedding-audio');
+            if (isPlaying) {
+                audio.pause();
+                updateMusicUI(false);
+            } else {
+                audio.play();
+                updateMusicUI(true);
+            }
+        }
+
+        function updateMusicUI(playing) {
+            isPlaying = playing;
+            const icon = document.getElementById('music-icon');
+            const text = document.getElementById('music-text');
+            if (playing) {
+                icon.className = 'fas fa-pause animate-pulse';
+                text.innerText = 'Pause Music';
+            } else {
+                icon.className = 'fas fa-music';
+                text.innerText = 'Play Music';
+            }
+        }
+
+        /* Countdown Timer */
+        const weddingDate = new Date('November 25, 2026 20:00:00 GMT+0530').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = weddingDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+                document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+                document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        /* Lightbox Functionality */
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.remove('hidden');
+            document.getElementById('lightbox').classList.add('flex');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+            document.getElementById('lightbox').classList.remove('flex');
+        }
+
+        /* RSVP Form Handler */
+        function handleRSVP(event) {
+            event.preventDefault();
+            alert('Thank you for your RSVP! Your blessings mean the world to Sankalp & Manshi.');
+            event.target.reset();
+        }
+
+        /* WhatsApp Share */
+        function shareWhatsApp() {
+            const message = "You are cordially invited to the wedding celebrations of Sankalp Pandey & Manshi Pandey on 25th November 2026 at Farrukhabad. View full invitation here: " + window.location.href;
+            window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(message), '_blank');
+        }
+
+        /* Add to Calendar (.ics download) */
+        function addToCalendar() {
+            const icsData = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sankalp and Manshi Wedding//EN
+BEGIN:VEVENT
+SUMMARY:Wedding of Sankalp Pandey & Manshi Pandey
+DESCRIPTION:Join us for the sacred wedding ceremony of Sankalp and Manshi at The Krishna Palace, Farrukhabad.
+LOCATION:The Krishna Palace, Farrukhabad, Uttar Pradesh
+DTSTART:20261125T143000Z
+DTEND:20261125T183000Z
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', 'Sankalp_Manshi_Wedding.ics');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /* Petal Animation Canvas Logic */
+        const canvas = document.getElementById('petal-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const petals = Array.from({ length: 25 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 6 + 4,
+            speedY: Math.random() * 1 + 0.5,
+            speedX: Math.random() * 0.5 - 0.25,
+            opacity: Math.random() * 0.5 + 0.3
+        }));
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+
+                if (p.y > canvas.height) p.y = -10;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.x < 0) p.x = canvas.width;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+
+        window.onload = function() {
+            animatePetals();
+        };
+    </script>
+</body>
+</html>
